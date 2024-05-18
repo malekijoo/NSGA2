@@ -5,7 +5,6 @@ from itertools import chain
 
 # import random
 
-
 def init(arr, lb, ub):
 
     arr_type = arr.dtype
@@ -16,20 +15,14 @@ def init(arr, lb, ub):
         return np.random.uniform(low=lb, high=ub + 1)
 
 def op_cross(p1, p2):
-    """Performs crossover between two parents"""
 
     new_p1 = Individual()
     new_p2 = Individual()
-    # print('p1 \n', p1.X['NTIRtir'])
-    # print('p2 \n', p2.X['NTIRtir'])
-    #
-    # print('new_p1 \n', new_p1.X['NTIRtir'])
 
     for key, _ in p1.X.items():
 
         crossover_point = np.random.randint(0, p1.X[key].size)
-        # if key == "NTIRtir":
-        #     print('crossover_point ', crossover_point)
+
         _t1 = np.zeros(p1.X[key].size)
         _t2 = np.zeros(p2.X[key].size)
 
@@ -42,22 +35,18 @@ def op_cross(p1, p2):
         new_p1.X[key] = deepcopy(_t1.reshape(p1.X[key].shape))
         new_p2.X[key] = deepcopy(_t2.reshape(p2.X[key].shape))
 
-    # print('new_p1 \n', new_p1.X['NTIRtir'])
-    # print('new_p2 \n', new_p2.X['NTIRtir'])
     return deepcopy(new_p1), deepcopy(new_p2)
 
 
 def crossover(pop, n_crossover):
     # Crossover
     popc = [[None, None] for _ in range(n_crossover // 2)]
-    # print(popc, (n_crossover // 2))
     for k in range(n_crossover // 2):
         parents = np.random.choice(range(len(pop)), size=2, replace=False)
         p1 = pop[parents[0]]
         p2 = pop[parents[1]]
         popc[k][0], popc[k][1] = op_cross(p1, p2)
 
-    # Flatten Offsprings List
     popc = list(chain(*popc))
 
     return popc
@@ -74,21 +63,16 @@ def op_mutate(p):
         size += v.size
 
     n_mu = np.ceil(mu * size)
-    # print('size ', size, n_mu)
     y = deepcopy(p)
     J = np.random.choice(list(p.X.keys()), int(n_mu), replace=False)
-    # print(J)
 
     for key in J:
         y_size = y.X[key].size
-        # print(y.X[key])
         ith_val = np.random.randint(0, y_size)
-        # print(key, ith_val)
         _temp = y.X[key].flatten()
         _temp[ith_val] = init(y.X[key], y.lb[key], y.ub[key])
         _temp = _temp.reshape(y.X[key].shape)
         y.X[key] = deepcopy(_temp)
-        # print(y.X[key])
     return deepcopy(y)
 
 
@@ -109,7 +93,6 @@ def mutation(pop, n_mutation):
 
 
 def constraint_dominates(p, q):
-    """ implemented from https://www.youtube.com/watch?v=k_3IKDUuM9E """
     if p.constraint_violation_count < q.constraint_violation_count:
         return True
     elif p.constraint_violation_count == q.constraint_violation_count:
@@ -119,12 +102,10 @@ def constraint_dominates(p, q):
 
 
 def dominates(p, q):
-    """Checks if p dominates q"""
     return all(p.objectives <= q.objectives) and any(p.objectives < q.objectives)
 
 
 def non_dominated_sorting(pop):
-    """Perform Non-dominated Sorting on a Population"""
 
     pop_size = len(pop)
 
@@ -186,7 +167,6 @@ def non_dominated_sorting(pop):
 
 
 def calc_crowding_distance(pop, F):
-    """Calculate the crowding distance for a given population"""
 
     # Number of Pareto fronts (ranks)
     parto_count = len(F)
@@ -218,7 +198,7 @@ def calc_crowding_distance(pop, F):
 
 
 def sort_population(pop):
-    """Sorts a population based on rank (in asceding order) and crowding distance (in descending order)"""
+
     pop = sorted(pop, key=lambda x: (x.rank, -x.crowding_distance))
 
     max_rank = pop[-1].rank
@@ -230,7 +210,6 @@ def sort_population(pop):
 
 
 def truncate_population(pop, F, pop_size=None):
-    """Truncates a population to a given size"""
 
     if pop_size is None:
         pop_size = len(pop)
