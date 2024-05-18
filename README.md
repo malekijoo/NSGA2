@@ -14,3 +14,5 @@ The NSGA2 is an evolutionary algorithm used for Decision-making on Real-World pr
 
 > [!TIP]
 > You can define a _Repair Strategy_  instead of _Penalty_ for constraints in `utils.py`
+
+Please Like and subscribe.
